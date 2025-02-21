@@ -1,4 +1,4 @@
-package com.idea.springboot.webflux.app.models;
+package com.idea.springboot.webflux.app.models.documents;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
