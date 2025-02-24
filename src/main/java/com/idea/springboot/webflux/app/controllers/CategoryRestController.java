@@ -5,6 +5,7 @@ import com.idea.springboot.webflux.app.models.dtos.CategoryDTO;
 import com.idea.springboot.webflux.app.services.CategoryService;
 import com.idea.springboot.webflux.app.validations.OnCreate;
 import com.idea.springboot.webflux.app.validations.OnProductUpdate;
+import com.idea.springboot.webflux.app.validations.OnUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class CategoryRestController {
     }
 
     @PutMapping("/update/{id}")
-    public Mono<ResponseEntity<MessageResponse>> update(@PathVariable String id, @Validated(OnProductUpdate.class) @RequestBody CategoryDTO request) {
+    public Mono<ResponseEntity<MessageResponse>> update(@PathVariable String id, @Validated(OnUpdate.class) @RequestBody CategoryDTO request) {
         Date currentDate = new Date();
 
         return categoryService.update(id, request).map(responseDto -> {

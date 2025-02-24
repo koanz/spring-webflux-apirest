@@ -1,6 +1,7 @@
 package com.idea.springboot.webflux.app.services.impl;
 
 import com.idea.springboot.webflux.app.exceptions.CategoryNotFountException;
+import com.idea.springboot.webflux.app.exceptions.ProductNotFoundException;
 import com.idea.springboot.webflux.app.mappers.CategoryMapper;
 import com.idea.springboot.webflux.app.models.documents.Category;
 import com.idea.springboot.webflux.app.models.dtos.CategoryDTO;
@@ -56,7 +57,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @Override
     public Mono<CategoryDTO> update(String id, CategoryDTO request) {
-        return null;
+        return repository.findById(id)
+                .flatMap(existingCategory -> {
+                    existingCategory.setName(request.getName());
+                    return repository.save(existingCategory);
+                })
+                .map(mapper::toDTO)
+                .switchIfEmpty(Mono.error(new CategoryNotFountException(id)));
     }
 
     @Transactional
