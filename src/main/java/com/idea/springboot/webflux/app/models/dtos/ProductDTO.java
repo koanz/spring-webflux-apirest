@@ -2,7 +2,6 @@ package com.idea.springboot.webflux.app.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.idea.springboot.webflux.app.models.DocumentsDTO;
 import com.idea.springboot.webflux.app.validations.OnProductCreate;
 import com.idea.springboot.webflux.app.validations.OnProductUpdate;
 import jakarta.validation.Valid;
@@ -14,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductDTO implements DocumentsDTO {
+public class ProductDTO {
     private String id;
 
     @NotEmpty(message = "Product name cannot be empty.", groups = {OnProductCreate.class, OnProductUpdate.class})
