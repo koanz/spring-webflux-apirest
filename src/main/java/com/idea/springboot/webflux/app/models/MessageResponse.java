@@ -22,7 +22,7 @@ public class MessageResponse implements GenericMessageResponse {
         this.timestamp = timestamp;
     }
 
-    public void addDynamicField(String key, Object value) {
+    public void addDynamicFieldName(String key, Object value) {
         data.put(key, value);
     }
 

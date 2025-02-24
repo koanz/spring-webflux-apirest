@@ -39,7 +39,7 @@ public class CategoryRestController {
 
         return categoryService.save(request).map(responseDto -> {
             MessageResponse response = new MessageResponse("Successfully created", currentDate.toString());
-            response.addDynamicField("category", responseDto);
+            response.addDynamicFieldName("category", responseDto);
 
             return ResponseEntity.ok(response);
         });

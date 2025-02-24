@@ -40,7 +40,7 @@ public class ProductRestController {
 
         return productService.save(request).map(responseDto -> {
             MessageResponse response = new MessageResponse("Successfully created", currentDate.toString());
-            response.addDynamicField("product", responseDto);
+            response.addDynamicFieldName("product", responseDto);
 
             return ResponseEntity.ok(response);
         });
@@ -52,7 +52,7 @@ public class ProductRestController {
 
         return productService.update(id, request).map(productDTO -> {
             MessageResponse response = new MessageResponse("Successfully created", currentDate.toString());
-            response.addDynamicField("product", productDTO);
+            response.addDynamicFieldName("product", productDTO);
 
             return ResponseEntity.ok(response);
         });
