@@ -1,32 +1,34 @@
 package com.idea.springboot.webflux.app.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.idea.springboot.webflux.app.models.dtos.ProductDTO;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Component
-public class MessageResponse {
+public class MessageResponse implements GenericMessageResponse {
     private String message;
     private String timestamp;
-
-    @JsonProperty("product")
-    private ProductDTO productDTO;
+    private Map<String, Object> data = new HashMap<>();
 
     public MessageResponse() {
     }
 
-    public MessageResponse(String message, String timestamp, ProductDTO productDTO) {
+    public MessageResponse(String message, String timestamp) {
         this.message = message;
         this.timestamp = timestamp;
-        this.productDTO = productDTO;
     }
 
-    public ProductDTO getProductDTO() {
-        return productDTO;
+    public void addDynamicField(String key, Object value) {
+        data.put(key, value);
     }
 
-    public void setProductDTO(ProductDTO productDTO) {
-        this.productDTO = productDTO;
+    @JsonAnyGetter
+    public Map<String, Object> getData() {
+        return data;
     }
 
     public String getMessage() {
