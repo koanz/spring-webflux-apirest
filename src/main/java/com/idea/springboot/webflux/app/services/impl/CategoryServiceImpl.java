@@ -1,13 +1,11 @@
-package com.idea.springboot.webflux.app.services;
+package com.idea.springboot.webflux.app.services.impl;
 
 import com.idea.springboot.webflux.app.exceptions.CategoryNotFountException;
-import com.idea.springboot.webflux.app.exceptions.ProductNotFoundException;
 import com.idea.springboot.webflux.app.mappers.CategoryMapper;
 import com.idea.springboot.webflux.app.models.documents.Category;
-import com.idea.springboot.webflux.app.models.documents.Product;
 import com.idea.springboot.webflux.app.models.dtos.CategoryDTO;
-import com.idea.springboot.webflux.app.models.dtos.ProductDTO;
 import com.idea.springboot.webflux.app.repositories.CategoryRepository;
+import com.idea.springboot.webflux.app.services.CategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
