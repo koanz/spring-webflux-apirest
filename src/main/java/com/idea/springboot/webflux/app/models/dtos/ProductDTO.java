@@ -25,8 +25,7 @@ public class ProductDTO {
 
     @NotNull(message = "Field category cannot be empty.", groups = {OnProductCreate.class, OnProductUpdate.class})
     @Valid
-    @JsonProperty("category")
-    private CategoryDTO categoryDTO;
+    private CategoryDTO category;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("created_at")
@@ -59,12 +58,12 @@ public class ProductDTO {
         this.price = price;
     }
 
-    public CategoryDTO getCategoryDTO() {
-        return categoryDTO;
+    public CategoryDTO getCategory() {
+        return category;
     }
 
-    public void setCategoryDTO(CategoryDTO categoryDTO) {
-        this.categoryDTO = categoryDTO;
+    public void setCategory(CategoryDTO category) {
+        this.category = category;
     }
 
     public Date getCreatedAt() {
