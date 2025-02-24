@@ -1,22 +1,24 @@
 package com.idea.springboot.webflux.app.models.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.idea.springboot.webflux.app.models.DocumentsDTO;
 import com.idea.springboot.webflux.app.validations.OnCreate;
-import com.idea.springboot.webflux.app.validations.OnUpdate;
+import com.idea.springboot.webflux.app.validations.OnProductCreate;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-@Component
-public class CategoryDTO {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CategoryDTO implements DocumentsDTO {
 
-    @NotNull(message = "Field id cannot be empty.", groups = OnCreate.class)
+    @NotNull(message = "Category id cannot be empty.", groups = OnProductCreate.class)
     private String id;
 
-    @NotEmpty(message = "Field name cannot be empty.", groups = OnUpdate.class)
+    @NotEmpty(message = "Category name cannot be empty.", groups = OnCreate.class)
     private String name;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("created_at")

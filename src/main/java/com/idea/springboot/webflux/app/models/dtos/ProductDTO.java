@@ -1,26 +1,31 @@
 package com.idea.springboot.webflux.app.models.dtos;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.idea.springboot.webflux.app.models.DocumentsDTO;
+import com.idea.springboot.webflux.app.validations.OnProductCreate;
+import com.idea.springboot.webflux.app.validations.OnProductUpdate;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-@Component
-public class ProductDTO {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ProductDTO implements DocumentsDTO {
     private String id;
 
-    @NotEmpty(message = "Field name cannot be empty.")
+    @NotEmpty(message = "Product name cannot be empty.", groups = {OnProductCreate.class, OnProductUpdate.class})
     private String name;
 
-    @NotNull(message = "Field price cannot be empty.")
-    @Positive(message = "Field price must be greater than zero (0).")
+    @NotNull(message = "Product price cannot be null.", groups = {OnProductCreate.class, OnProductUpdate.class})
+    @Positive(message = "Product price must be greater than zero (0).", groups = {OnProductCreate.class, OnProductUpdate.class})
     private Double price;
 
-    @NotNull
+    @NotNull(message = "Field category cannot be empty.", groups = {OnProductCreate.class, OnProductUpdate.class})
+    @Valid
     @JsonProperty("category")
     private CategoryDTO categoryDTO;
 
