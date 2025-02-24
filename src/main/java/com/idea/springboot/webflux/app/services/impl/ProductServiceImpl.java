@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     public Mono<ProductDTO> save(ProductDTO request) {
         logger.info("Creating Product: " + request.getName());
 
-        return categoryService.findById(request.getCategoryDTO().getId())
+        return categoryService.findById(request.getCategory().getId())
                 .flatMap(category -> {
                     Product product = mapper.toEntity(request);
                     product.setCategory(category);
@@ -56,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
                     return repository.save(product);
                 })
                 .map(mapper::toDto)
-                .switchIfEmpty(Mono.error(new CategoryNotFountException(request.getCategoryDTO().getId())));
+                .switchIfEmpty(Mono.error(new CategoryNotFountException(request.getCategory().getId())));
     }
 
     @Transactional
@@ -66,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
 
         return repository.findById(id)
                 .flatMap(existingProduct -> {
-                    return categoryService.findById(request.getCategoryDTO().getId())
+                    return categoryService.findById(request.getCategory().getId())
                             .flatMap(category -> {
                                 existingProduct.setName(request.getName());
                                 existingProduct.setPrice(request.getPrice());
