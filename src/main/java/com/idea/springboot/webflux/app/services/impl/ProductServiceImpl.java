@@ -1,6 +1,9 @@
 package com.idea.springboot.webflux.app.services;
 
+import com.idea.springboot.webflux.app.exceptions.CategoryNotFountException;
+import com.idea.springboot.webflux.app.exceptions.ProductNotFoundException;
 import com.idea.springboot.webflux.app.mappers.ProductMapper;
+import com.idea.springboot.webflux.app.models.documents.Category;
 import com.idea.springboot.webflux.app.models.documents.Product;
 import com.idea.springboot.webflux.app.models.dtos.ProductDTO;
 import com.idea.springboot.webflux.app.repositories.ProductRepository;
@@ -34,7 +37,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Mono<ProductDTO> findById(String id) {
-        return repository.findById(id).map(mapper::toDto);
+        return repository.findById(id)
+                .map(mapper::toDto)
+                .switchIfEmpty(Mono.error(new ProductNotFoundException(id)));
     }
 
     @Transactional
@@ -50,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
                     return repository.save(product);
                 })
                 .map(mapper::toDto)
-                .doOnError(throwable -> logger.error("Error in save method"));
+                .switchIfEmpty(Mono.error(new CategoryNotFountException(request.getCategoryDTO().getId())));
     }
 
     @Transactional
@@ -59,7 +64,6 @@ public class ProductServiceImpl implements ProductService {
         logger.info("Updating Product: " + id);
 
         return repository.findById(id)
-                .switchIfEmpty(Mono.error(new RuntimeException("Product not found id: " + id)))
                 .flatMap(existingProduct -> {
                     return categoryService.findById(request.getCategoryDTO().getId())
                             .flatMap(category -> {
@@ -70,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
                             });
                 })
                 .map(mapper::toDto)
-                .doOnError(throwable -> logger.error("Error in update method"));
+                .switchIfEmpty(Mono.error(new ProductNotFoundException(id)));
     }
 
     @Transactional
@@ -79,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
         logger.info("Deleting Product: " + id);
 
         return repository.findById(id)
-                .switchIfEmpty(Mono.error(new RuntimeException("Product not found id: " + id)))
+                .switchIfEmpty(Mono.error(new ProductNotFoundException(id)))
                 .flatMap(product -> repository.delete(product))
                 .doOnError(throwable -> logger.error("Error in delete method", throwable));
 
