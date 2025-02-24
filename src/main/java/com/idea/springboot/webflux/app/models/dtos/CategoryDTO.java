@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.idea.springboot.webflux.app.validations.OnCreate;
 import com.idea.springboot.webflux.app.validations.OnProductCreate;
+import com.idea.springboot.webflux.app.validations.OnUpdate;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,7 +17,7 @@ public class CategoryDTO {
     @NotNull(message = "Category id cannot be empty.", groups = OnProductCreate.class)
     private String id;
 
-    @NotEmpty(message = "Category name cannot be empty.", groups = OnCreate.class)
+    @NotEmpty(message = "Category name cannot be empty.", groups = {OnCreate.class, OnUpdate.class})
     private String name;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("created_at")
