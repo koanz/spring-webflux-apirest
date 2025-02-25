@@ -4,8 +4,12 @@ import com.idea.springboot.webflux.app.models.MessageResponse;
 import com.idea.springboot.webflux.app.models.dtos.CategoryDTO;
 import com.idea.springboot.webflux.app.services.CategoryService;
 import com.idea.springboot.webflux.app.validations.OnCreate;
-import com.idea.springboot.webflux.app.validations.OnProductUpdate;
 import com.idea.springboot.webflux.app.validations.OnUpdate;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,7 @@ import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/v1/categories")
+@Tag(name = "Categories API V1")
 public class CategoryRestController {
     private static final Logger logger = LoggerFactory.getLogger(ProductRestController.class);
 
@@ -34,7 +39,13 @@ public class CategoryRestController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping({"/", "/list"})
+    @GetMapping("/")
+    @Operation(summary = "Returns a list of all categories available", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = @Content(schema = @Schema(implementation = CategoryDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "Categories not found")
+    })
     public Mono<ResponseEntity<Flux<CategoryDTO>>> getAll() {
         return Mono.just(ResponseEntity.ok(categoryService.getAll()));
     }

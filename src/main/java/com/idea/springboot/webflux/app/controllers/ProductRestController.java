@@ -5,6 +5,7 @@ import com.idea.springboot.webflux.app.models.dtos.ProductDTO;
 import com.idea.springboot.webflux.app.services.ProductService;
 import com.idea.springboot.webflux.app.validations.OnProductCreate;
 import com.idea.springboot.webflux.app.validations.OnProductUpdate;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/v1/products")
+@Tag(name = "Products API V1")
 public class ProductRestController {
     private static final Logger logger = LoggerFactory.getLogger(ProductRestController.class);
 
@@ -33,7 +35,7 @@ public class ProductRestController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping({"/", "/list"})
+    @GetMapping("/")
     public Mono<ResponseEntity<Flux<ProductDTO>>> getAll() {
         return Mono.just(ResponseEntity.ok(productService.getAll()));
     }
