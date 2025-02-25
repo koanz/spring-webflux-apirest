@@ -5,6 +5,7 @@ import com.idea.springboot.webflux.app.models.dtos.ProductDTO;
 import com.idea.springboot.webflux.app.services.ProductService;
 import com.idea.springboot.webflux.app.validations.CustomRequestValidator;
 import com.idea.springboot.webflux.app.validations.ValidationErrorResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Component
+@Tag(name = "Products API V2 (Router function)")
 public class ProductHandler {
     @Autowired
     private ProductService service;
@@ -30,16 +32,10 @@ public class ProductHandler {
     @Autowired
     private MessageSource messageSource;
 
-    private final Validator validator = new CustomRequestValidator();
-
     @Value("${product.field.name.message}")
     private String FIELD_NAME;
 
-    /*public ProductHandler(ProductService service, MessageSource messageSource, Validator validator) {
-        this.service = service;
-        this.messageSource = messageSource;
-        this.validator = validator;
-    }*/
+    private final Validator validator = new CustomRequestValidator();
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
         return ServerResponse.ok().body(service.getAll(), ProductDTO.class);

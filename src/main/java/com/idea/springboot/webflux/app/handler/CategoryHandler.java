@@ -4,6 +4,7 @@ import com.idea.springboot.webflux.app.models.MessageResponse;
 import com.idea.springboot.webflux.app.models.dtos.CategoryDTO;
 import com.idea.springboot.webflux.app.models.dtos.ProductDTO;
 import com.idea.springboot.webflux.app.services.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.Locale;
 
 @Component
+@Tag(name = "Categories API V2 (Router function)")
 public class CategoryHandler {
     @Autowired
     private CategoryService service;
