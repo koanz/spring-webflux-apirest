@@ -5,7 +5,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
-import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
@@ -42,6 +41,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleProductNotFoundException(ProductNotFoundException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("message", ex.getMessage());
+        errorResponse.put("trace_id", UUID.randomUUID().toString());
+        errorResponse.put("timestamp", new Date());
+        errorResponse.put("status", HttpStatus.NOT_FOUND.value());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(CustomNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCustomErrorResponseException(CustomNotFoundException ex) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("message", ex.getMessage());
         errorResponse.put("trace_id", UUID.randomUUID().toString());
