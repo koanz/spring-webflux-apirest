@@ -1,6 +1,7 @@
 package com.idea.springboot.webflux.app.services.impl;
 
 import com.idea.springboot.webflux.app.exceptions.CategoryNotFountException;
+import com.idea.springboot.webflux.app.exceptions.CustomNotFoundException;
 import com.idea.springboot.webflux.app.exceptions.ProductNotFoundException;
 import com.idea.springboot.webflux.app.mappers.ProductMapper;
 import com.idea.springboot.webflux.app.models.documents.Product;
@@ -33,7 +34,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Flux<ProductDTO> getAll() {
-        return repository.findAll().map(mapper::toDto);
+        return repository.findAll()
+                .map(mapper::toDto)
+                .switchIfEmpty(Mono.error(new CustomNotFoundException("No records exist")));
     }
 
     @Override
