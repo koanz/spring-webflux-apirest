@@ -35,6 +35,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Flux<ProductDTO> getAll() {
         return repository.findAll()
+                .filter(product -> product != null)
                 .map(mapper::toDto)
                 .switchIfEmpty(Mono.error(new CustomNotFoundException("No records exist")));
     }
