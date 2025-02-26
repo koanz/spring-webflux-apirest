@@ -4,16 +4,24 @@ import com.idea.springboot.webflux.app.models.MessageResponse;
 import com.idea.springboot.webflux.app.models.dtos.CategoryDTO;
 import com.idea.springboot.webflux.app.models.dtos.ProductDTO;
 import com.idea.springboot.webflux.app.services.CategoryService;
+import com.idea.springboot.webflux.app.validations.CustomRequestCategoryValidator;
+import com.idea.springboot.webflux.app.validations.ValidationErrorResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 @Component
@@ -28,6 +36,8 @@ public class CategoryHandler {
     @Value("${category.field.name.message}")
     private String FIELD_NAME;
 
+    private final Validator validator = new CustomRequestCategoryValidator();
+
     public Mono<ServerResponse> getAll(ServerRequest request) {
         return ServerResponse.ok().body(service.getAll(), ProductDTO.class);
     }
@@ -39,15 +49,29 @@ public class CategoryHandler {
     }
 
     public Mono<ServerResponse> save(ServerRequest request) {
-        Mono<CategoryDTO> categoryDtoMono = request.bodyToMono(CategoryDTO.class);
-        return categoryDtoMono.flatMap(category -> service.save(category)
-                .flatMap(savedCategory -> {
-                    MessageResponse response = new MessageResponse(
-                            messageSource.getMessage("creation.message", null, Locale.getDefault()),
-                            new Date().toString());
-                    response.addDynamicFieldName(FIELD_NAME, savedCategory);
-                    return ServerResponse.ok().bodyValue(response);
-                }));
+        return request.bodyToMono(CategoryDTO.class).flatMap(categoryDTO -> {
+            Errors errors = new BeanPropertyBindingResult(categoryDTO, CategoryDTO.class.getName());
+            validator.validate(categoryDTO, errors);
+
+            if (errors.hasErrors()) {
+                List<ValidationErrorResponse.ValidationError> validationErrors = new ArrayList<>();
+                errors.getAllErrors().forEach(error -> {
+                    String field = ((FieldError) error).getField();
+                    String errorMessage = error.getDefaultMessage();
+                    validationErrors.add(new ValidationErrorResponse.ValidationError(field, errorMessage));
+                });
+
+                return ServerResponse.badRequest().bodyValue(new ValidationErrorResponse("Validation failed", validationErrors));
+            }
+
+            return service.save(categoryDTO).flatMap(savedCategory -> {
+                MessageResponse response = new MessageResponse(
+                        messageSource.getMessage("creation.message", null, Locale.getDefault()),
+                        new Date().toString());
+                response.addDynamicFieldName(FIELD_NAME, savedCategory);
+                return ServerResponse.ok().bodyValue(response);
+            });
+        });
     }
 
     public Mono<ServerResponse> update(ServerRequest request) {
