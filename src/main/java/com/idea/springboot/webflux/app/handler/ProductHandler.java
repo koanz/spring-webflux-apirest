@@ -3,7 +3,7 @@ package com.idea.springboot.webflux.app.handler;
 import com.idea.springboot.webflux.app.models.MessageResponse;
 import com.idea.springboot.webflux.app.models.dtos.ProductDTO;
 import com.idea.springboot.webflux.app.services.ProductService;
-import com.idea.springboot.webflux.app.validations.CustomRequestValidator;
+import com.idea.springboot.webflux.app.validations.CustomRequestProductValidator;
 import com.idea.springboot.webflux.app.validations.ValidationErrorResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class ProductHandler {
     @Value("${product.field.name.message}")
     private String FIELD_NAME;
 
-    private final Validator validator = new CustomRequestValidator();
+    private final Validator validator = new CustomRequestProductValidator();
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
         return ServerResponse.ok().body(service.getAll(), ProductDTO.class);
