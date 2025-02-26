@@ -8,10 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,6 +23,7 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes {
         errorAttributes.put("timestamp", new Date());
 
         if (error instanceof CustomNotFoundException) {
+            errorAttributes.put("error", "Not Found");
             errorAttributes.put("message", error.getMessage());
             errorAttributes.put("status", HttpStatus.NOT_FOUND.value());
         } else if (error instanceof WebExchangeBindException) {
