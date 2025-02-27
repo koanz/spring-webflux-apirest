@@ -63,13 +63,7 @@ public class ProductHandler {
                 return ServerResponse.badRequest().bodyValue(new ValidationErrorResponse("Validation failed", validationErrors));
             }
 
-            return service.save(productDTO).flatMap(savedProduct -> {
-                MessageResponse response = new MessageResponse(
-                        messageSource.getMessage("creation.message", null, Locale.getDefault()),
-                        new Date().toString());
-                response.addDynamicFieldName(FIELD_NAME, savedProduct);
-                return ServerResponse.ok().bodyValue(response);
-            });
+            return service.save(productDTO).flatMap(savedProduct -> ServerResponse.ok().bodyValue(savedProduct));
         });
     }
 
@@ -77,11 +71,7 @@ public class ProductHandler {
         Mono<ProductDTO> productDtoMono = request.bodyToMono(ProductDTO.class);
         return productDtoMono.flatMap(productDTO -> service.update(request.pathVariable("id"), productDTO)
                 .flatMap(updatedProduct -> {
-                    MessageResponse response = new MessageResponse(
-                            messageSource.getMessage("update.message", null, Locale.getDefault()),
-                            new Date().toString());
-                    response.addDynamicFieldName(FIELD_NAME, updatedProduct);
-                    return ServerResponse.ok().bodyValue(response);
+                    return ServerResponse.ok().bodyValue(updatedProduct);
                 }));
     }
 

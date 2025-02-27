@@ -65,11 +65,7 @@ public class CategoryHandler {
             }
 
             return service.save(categoryDTO).flatMap(savedCategory -> {
-                MessageResponse response = new MessageResponse(
-                        messageSource.getMessage("creation.message", null, Locale.getDefault()),
-                        new Date().toString());
-                response.addDynamicFieldName(FIELD_NAME, savedCategory);
-                return ServerResponse.ok().bodyValue(response);
+                return ServerResponse.ok().bodyValue(savedCategory);
             });
         });
     }
@@ -78,11 +74,7 @@ public class CategoryHandler {
         Mono<CategoryDTO> categoryDtoMono = request.bodyToMono(CategoryDTO.class);
         return categoryDtoMono.flatMap(categoryDTO -> service.update(request.pathVariable("id"), categoryDTO)
                 .flatMap(updatedProduct -> {
-                    MessageResponse response = new MessageResponse(
-                            messageSource.getMessage("update.message", null, Locale.getDefault()),
-                            new Date().toString());
-                    response.addDynamicFieldName(FIELD_NAME, updatedProduct);
-                    return ServerResponse.ok().bodyValue(response);
+                    return ServerResponse.ok().bodyValue(updatedProduct);
                 }));
     }
 
