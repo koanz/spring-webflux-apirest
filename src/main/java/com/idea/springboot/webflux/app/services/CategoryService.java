@@ -12,4 +12,5 @@ public interface CategoryService {
     public Mono<CategoryDTO> save(CategoryDTO request);
     public Mono<CategoryDTO> update(String id, CategoryDTO request);
     public Mono<Void> delete(String id);
+    public Mono<CategoryDTO> findByName(String name);
 }

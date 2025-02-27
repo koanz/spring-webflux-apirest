@@ -1,8 +1,8 @@
 package com.idea.springboot.webflux.app.services.impl;
 
-import com.idea.springboot.webflux.app.exceptions.CategoryNotFountException;
+import com.idea.springboot.webflux.app.exceptions.CategoryNotFoundByNameException;
+import com.idea.springboot.webflux.app.exceptions.CategoryNotFountByIdException;
 import com.idea.springboot.webflux.app.exceptions.CustomNotFoundException;
-import com.idea.springboot.webflux.app.exceptions.ProductNotFoundException;
 import com.idea.springboot.webflux.app.mappers.CategoryMapper;
 import com.idea.springboot.webflux.app.models.documents.Category;
 import com.idea.springboot.webflux.app.models.dtos.CategoryDTO;
@@ -31,12 +31,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Mono<CategoryDTO> findDTOById(String id) {
         return repository.findById(id).map(mapper::toDTO)
-                .switchIfEmpty(Mono.error(new CategoryNotFountException(id)));
+                .switchIfEmpty(Mono.error(new CategoryNotFountByIdException(id)));
     }
 
     @Override
     public Mono<Category> findById(String id) {
-        return repository.findById(id).switchIfEmpty(Mono.error(new CategoryNotFountException(id)));
+        return repository.findById(id).switchIfEmpty(Mono.error(new CategoryNotFountByIdException(id)));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
                     return repository.save(existingCategory);
                 })
                 .map(mapper::toDTO)
-                .switchIfEmpty(Mono.error(new CategoryNotFountException(id)));
+                .switchIfEmpty(Mono.error(new CategoryNotFountByIdException(id)));
     }
 
     @Transactional
@@ -75,9 +75,16 @@ public class CategoryServiceImpl implements CategoryService {
         logger.info("Deleting Product: " + id);
 
         return repository.findById(id)
-                .switchIfEmpty(Mono.error(new CategoryNotFountException(id)))
+                .switchIfEmpty(Mono.error(new CategoryNotFountByIdException(id)))
                 .flatMap(product -> repository.delete(product))
                 .doOnError(throwable -> logger.error("Error in delete method", throwable));
+    }
+
+    @Override
+    public Mono<CategoryDTO> findByName(String name) {
+        return repository.findByName(name)
+                .map(mapper::toDTO)
+                .switchIfEmpty(Mono.error(new CategoryNotFoundByNameException(name)));
     }
 
 }
