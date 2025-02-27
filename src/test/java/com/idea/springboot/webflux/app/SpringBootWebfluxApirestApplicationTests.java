@@ -186,4 +186,27 @@ class SpringBootWebfluxApirestApplicationTests {
 				});
 	}
 
+	@Test
+	public void deleteTest() {
+		String id = "67c0a732362a641ac1b79ea1";
+
+		client.delete()
+				.uri("/api/v2/products/delete/{id}", id)
+				.header("id", id)
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isOk()
+				.expectHeader().contentType(MediaType.APPLICATION_JSON)
+				.expectBody(MessageResponse.class)
+				.consumeWith(response -> {
+					Assertions.assertNotNull(response);
+
+					MessageResponse messageResponse = response.getResponseBody();
+
+					// Verifica que el mensaje sea el correcto
+					Assertions.assertEquals("Successfully deleted", messageResponse.getMessage());
+					Assertions.assertNotNull(messageResponse.getTimestamp());
+				});
+	}
+
 }
