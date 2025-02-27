@@ -32,7 +32,7 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes {
                     .collect(Collectors.toList());
             errorAttributes.put("errors", errors);
             errorAttributes.put("status", HttpStatus.BAD_REQUEST.value());
-        } else if (error instanceof CategoryNotFountException || error instanceof ProductNotFoundException) {
+        } else if (error instanceof CategoryNotFountByIdException || error instanceof CategoryNotFoundByNameException || error instanceof ProductNotFoundException) {
             errorAttributes.put("message", error.getMessage());
             errorAttributes.put("status", HttpStatus.NOT_FOUND.value());
         } else {

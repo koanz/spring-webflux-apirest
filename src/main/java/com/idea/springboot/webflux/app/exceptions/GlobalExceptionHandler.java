@@ -28,8 +28,8 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.badRequest().body(errorResponse));
     }
 
-    @ExceptionHandler(CategoryNotFountException.class)
-    public ResponseEntity<Map<String, Object>> handleCategoryNotFountException(CategoryNotFountException ex) {
+    @ExceptionHandler(CategoryNotFountByIdException.class)
+    public ResponseEntity<Map<String, Object>> handleCategoryNotFountException(CategoryNotFountByIdException ex) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("message", ex.getMessage());
         errorResponse.put("trace_id", UUID.randomUUID().toString());
