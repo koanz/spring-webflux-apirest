@@ -5,6 +5,7 @@ import com.idea.springboot.webflux.app.models.dtos.CategoryDTO;
 import com.idea.springboot.webflux.app.models.dtos.ProductDTO;
 
 import com.idea.springboot.webflux.app.services.CategoryService;
+import com.idea.springboot.webflux.app.services.ProductService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -132,6 +133,47 @@ class SpringBootWebfluxApirestApplicationTests {
 
 					Assertions.assertEquals(responseDto.getName(), productDTO.getName());
 					Assertions.assertEquals(responseDto.getPrice(), productDTO.getPrice());
+
+					// Verifica los campos de categoría y created_at
+					Assertions.assertNotNull(responseDto.getCategory());
+					// Verifica que la categoría sea la misma
+					Assertions.assertEquals(responseDto.getCategory().getId(), categoryDTO.getId());
+					Assertions.assertEquals(responseDto.getCategory().getName(), categoryDTO.getName());
+					Assertions.assertEquals(responseDto.getCategory().getCreatedAt(), categoryDTO.getCreatedAt());
+
+					Assertions.assertNotNull(responseDto.getCreatedAt());
+				});
+	}
+
+	@Test
+	public void updateTest() {
+		String id = "67c0a732362a641ac1b79ea1";
+
+		CategoryDTO categoryDTO = categoryService.findByName("Electronics").block();
+		ProductDTO productToUpdate = new ProductDTO();
+		productToUpdate.setName("Xiaomi Redmi 4 256GB");
+		productToUpdate.setPrice(459.99);
+		productToUpdate.setCategory(categoryDTO);
+
+		client.put()
+				.uri("/api/v2/products/update/{id}", id)
+				.accept(MediaType.APPLICATION_JSON)
+				.header("id", id)
+				.body(BodyInserters.fromValue(productToUpdate))
+				.exchange()
+				.expectStatus().isOk()
+				.expectHeader().contentType(MediaType.APPLICATION_JSON)
+				.expectBody(ProductDTO.class)
+				.consumeWith(response -> {
+					ProductDTO responseDto = response.getResponseBody();
+					// Verifica que la respuesta no sea nula
+					Assertions.assertNotNull(responseDto);
+
+					// Verifica los campos del producto
+					Assertions.assertEquals(responseDto.getId(), id);
+
+					Assertions.assertEquals(responseDto.getName(), productToUpdate.getName());
+					Assertions.assertEquals(responseDto.getPrice(), productToUpdate.getPrice());
 
 					// Verifica los campos de categoría y created_at
 					Assertions.assertNotNull(responseDto.getCategory());
