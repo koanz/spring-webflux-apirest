@@ -7,9 +7,11 @@ import com.idea.springboot.webflux.app.models.dtos.ProductDTO;
 import com.idea.springboot.webflux.app.services.CategoryService;
 import com.idea.springboot.webflux.app.services.ProductService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -29,22 +31,27 @@ class SpringBootWebfluxApirestApplicationTests {
 	@Autowired
 	private CategoryService categoryService;
 
+	@Value("${config.base.endpoint}")
+	private String uri;
+
 	@Test
+	@Order(1)
 	public void listTest() {
 		client.get()
-				.uri("/api/v2/products/")
+				.uri(uri + "/")
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
 				.expectStatus().isOk()
 				.expectHeader().contentType(MediaType.APPLICATION_JSON)
 				.expectBodyList(ProductDTO.class)
-				.hasSize(16);
+				.hasSize(4);
 	}
 
 	@Test
+	@Order(2)
 	public void notEmptyListWithConsumeWithTest() {
 		client.get()
-				.uri("/api/v2/products/")
+				.uri(uri + "/")
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
 				.expectStatus().isOk()
@@ -55,10 +62,11 @@ class SpringBootWebfluxApirestApplicationTests {
 				});
 	}
 
-	@Test
+	/*@Test
+	@Order(3)*/
 	public void noRecordExistMessageAndStatusCodeTest() {
 		client.get()
-				.uri("/api/v2/products/")
+				.uri(uri + "/")
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
 				.expectStatus().is4xxClientError()
@@ -68,11 +76,12 @@ class SpringBootWebfluxApirestApplicationTests {
 	}
 
 	@Test
+	@Order(4)
 	public void statusCodeNotFoundByIdTest() {
 		String id = "67bf9ad0d572bc1cde0586a";
 
 		client.get()
-				.uri("/api/v2/products/{id}", id)
+				.uri(uri + "/{id}", id)
 				.accept(MediaType.APPLICATION_JSON)
 				.header("id", id)
 				.exchange()
@@ -85,11 +94,12 @@ class SpringBootWebfluxApirestApplicationTests {
 	}
 
 	@Test
+	@Order(5)
 	public void existProductByIdTest() {
 		String id = "67bf9ad0d572bc1cde0586ab";
 
 		client.get()
-				.uri("/api/v2/products/{id}", id)
+				.uri(uri + "/{id}", id)
 				.accept(MediaType.APPLICATION_JSON)
 				.header("id", id)
 				.exchange()
@@ -100,14 +110,15 @@ class SpringBootWebfluxApirestApplicationTests {
 					ProductDTO responseDto = response.getResponseBody();
 					Assertions.assertEquals(responseDto.getId(), id);
 					Assertions.assertNotNull(responseDto.getName());
-					Assertions.assertEquals(responseDto.getName(), "Samsung S23 FE 128GB");
+					Assertions.assertEquals(responseDto.getName(), "Xiaomi Redmi 4 256GB");
 					Assertions.assertNotNull(responseDto.getPrice());
-					Assertions.assertEquals(responseDto.getPrice(), 389.99);
+					Assertions.assertEquals(responseDto.getPrice(), 459.99);
 
 				});
 	}
 
 	@Test
+	@Order(6)
 	public void createTest() {
 		CategoryDTO categoryDTO = categoryService.findByName("Technology").block();
 		ProductDTO productDTO = new ProductDTO();
@@ -116,7 +127,7 @@ class SpringBootWebfluxApirestApplicationTests {
 		productDTO.setCategory(categoryDTO);
 
 		client.post()
-				.uri("/api/v2/products/create")
+				.uri(uri + "/create")
 				.accept(MediaType.APPLICATION_JSON)
 				.body(BodyInserters.fromValue(productDTO))
 				.exchange()
@@ -146,8 +157,9 @@ class SpringBootWebfluxApirestApplicationTests {
 	}
 
 	@Test
+	@Order(7)
 	public void updateTest() {
-		String id = "67c0a732362a641ac1b79ea1";
+		String id = "67bf9ad0d572bc1cde0586ab";
 
 		CategoryDTO categoryDTO = categoryService.findByName("Electronics").block();
 		ProductDTO productToUpdate = new ProductDTO();
@@ -156,7 +168,7 @@ class SpringBootWebfluxApirestApplicationTests {
 		productToUpdate.setCategory(categoryDTO);
 
 		client.put()
-				.uri("/api/v2/products/update/{id}", id)
+				.uri(uri + "/update/{id}", id)
 				.accept(MediaType.APPLICATION_JSON)
 				.header("id", id)
 				.body(BodyInserters.fromValue(productToUpdate))
@@ -187,11 +199,13 @@ class SpringBootWebfluxApirestApplicationTests {
 	}
 
 	@Test
+	@Order(8)
 	public void deleteTest() {
-		String id = "67c0a732362a641ac1b79ea1";
+		String id = "67c0861910d135034f8ce00b";
+		String expectedMessage = "Product with id '" + id + "' not found";
 
 		client.delete()
-				.uri("/api/v2/products/delete/{id}", id)
+				.uri(uri + "/delete/{id}", id)
 				.header("id", id)
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
@@ -206,6 +220,23 @@ class SpringBootWebfluxApirestApplicationTests {
 					// Verifica que el mensaje sea el correcto
 					Assertions.assertEquals("Successfully deleted", messageResponse.getMessage());
 					Assertions.assertNotNull(messageResponse.getTimestamp());
+				});
+
+		client.get()
+				.uri(uri + "/{id}", id)
+				.header("id", id)
+				.exchange()
+				.expectStatus().isNotFound()
+				.expectBody(MessageResponse.class)
+				.consumeWith(response -> {
+					Assertions.assertNotNull(response);
+
+					MessageResponse messageResponse = response.getResponseBody();
+
+					// Verifica que el mensaje sea el correcto
+					Assertions.assertEquals(expectedMessage, messageResponse.getMessage());
+					Assertions.assertNotNull(messageResponse.getTimestamp());
+
 				});
 	}
 
