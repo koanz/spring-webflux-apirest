@@ -46,35 +46,19 @@ public class ProductRestController {
     }
 
     @PostMapping("/create")
-    public Mono<ResponseEntity<MessageResponse>> save(@RequestBody @Validated(OnProductCreate.class) ProductDTO request) {
-        Date currentDate = new Date();
-
-        return productService.save(request).map(responseDto -> {
-            MessageResponse response = new MessageResponse(messageSource.getMessage("creation.message", null, Locale.getDefault()), currentDate.toString());
-            response.addDynamicFieldName(FIELD_NAME, responseDto);
-
-            return ResponseEntity.ok(response);
-        });
+    public Mono<ResponseEntity<ProductDTO>> save(@RequestBody @Validated(OnProductCreate.class) ProductDTO request) {
+        return productService.save(request).map(ResponseEntity::ok);
     }
 
     @PutMapping("/update/{id}")
-    public Mono<ResponseEntity<MessageResponse>> update(@PathVariable String id, @Validated(OnProductUpdate.class) @RequestBody ProductDTO request) {
-        Date currentDate = new Date();
-
-        return productService.update(id, request).map(productDTO -> {
-            MessageResponse response = new MessageResponse(messageSource.getMessage("update.message", null, Locale.getDefault()), currentDate.toString());
-            response.addDynamicFieldName(FIELD_NAME, productDTO);
-
-            return ResponseEntity.ok(response);
-        });
+    public Mono<ResponseEntity<ProductDTO>> update(@PathVariable String id, @Validated(OnProductUpdate.class) @RequestBody ProductDTO request) {
+        return productService.update(id, request).map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/delete/{id}")
     public Mono<ResponseEntity<MessageResponse>> delete(@PathVariable String id) {
-        Date currentDate = new Date();
-
         return productService.delete(id)
-                .then(Mono.just(ResponseEntity.ok(new MessageResponse(messageSource.getMessage("delete.message", null, Locale.getDefault()), currentDate.toString()))));
+                .then(Mono.just(ResponseEntity.ok(new MessageResponse(messageSource.getMessage("delete.message", null, Locale.getDefault()), new Date().toString()))));
     }
 
 }

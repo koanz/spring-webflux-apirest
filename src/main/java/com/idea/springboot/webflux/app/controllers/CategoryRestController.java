@@ -56,27 +56,13 @@ public class CategoryRestController {
     }
 
     @PostMapping("/create")
-    public Mono<ResponseEntity<MessageResponse>> create(@RequestBody @Validated(OnCreate.class) CategoryDTO request) {
-        Date currentDate = new Date();
-
-        return categoryService.save(request).map(responseDto -> {
-            MessageResponse response = new MessageResponse(messageSource.getMessage("creation.message", null, Locale.getDefault()), currentDate.toString());
-            response.addDynamicFieldName(FIELD_NAME, responseDto);
-
-            return ResponseEntity.ok(response);
-        });
+    public Mono<ResponseEntity<CategoryDTO>> create(@RequestBody @Validated(OnCreate.class) CategoryDTO request) {
+        return categoryService.save(request).map(ResponseEntity::ok);
     }
 
     @PutMapping("/update/{id}")
-    public Mono<ResponseEntity<MessageResponse>> update(@PathVariable String id, @Validated(OnUpdate.class) @RequestBody CategoryDTO request) {
-        Date currentDate = new Date();
-
-        return categoryService.update(id, request).map(responseDto -> {
-            MessageResponse response = new MessageResponse(messageSource.getMessage("update.message", null, Locale.getDefault()), currentDate.toString());
-            response.addDynamicFieldName(FIELD_NAME, responseDto);
-
-            return ResponseEntity.ok(response);
-        });
+    public Mono<ResponseEntity<CategoryDTO>> update(@PathVariable String id, @Validated(OnUpdate.class) @RequestBody CategoryDTO request) {
+        return categoryService.update(id, request).map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/delete/{id}")
