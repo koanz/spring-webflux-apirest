@@ -13,4 +13,6 @@ public interface ProductService {
     public Mono<ProductDTO> update(String id, ProductDTO request);
 
     public Mono<Void> delete(String id);
+
+    public Mono<ProductDTO> findByName(String name);
 }

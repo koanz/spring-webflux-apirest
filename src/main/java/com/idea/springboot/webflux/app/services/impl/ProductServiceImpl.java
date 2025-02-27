@@ -2,6 +2,7 @@ package com.idea.springboot.webflux.app.services.impl;
 
 import com.idea.springboot.webflux.app.exceptions.CategoryNotFountByIdException;
 import com.idea.springboot.webflux.app.exceptions.CustomNotFoundException;
+import com.idea.springboot.webflux.app.exceptions.ProductNotFoundByNameException;
 import com.idea.springboot.webflux.app.exceptions.ProductNotFoundException;
 import com.idea.springboot.webflux.app.mappers.ProductMapper;
 import com.idea.springboot.webflux.app.models.documents.Product;
@@ -92,5 +93,12 @@ public class ProductServiceImpl implements ProductService {
                 .flatMap(product -> repository.delete(product))
                 .doOnError(throwable -> logger.error("Error in delete method", throwable));
 
+    }
+
+    @Override
+    public Mono<ProductDTO> findByName(String name) {
+        return repository.findByName(name)
+                .map(mapper::toDto)
+                .switchIfEmpty(Mono.error(new ProductNotFoundByNameException(name)));
     }
 }
