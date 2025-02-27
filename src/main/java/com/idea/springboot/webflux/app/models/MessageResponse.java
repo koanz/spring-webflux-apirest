@@ -12,7 +12,6 @@ import java.util.Map;
 public class MessageResponse implements GenericMessageResponse {
     private String message;
     private String timestamp;
-    private Map<String, Object> data = new HashMap<>();
 
     public MessageResponse() {
     }
@@ -20,15 +19,6 @@ public class MessageResponse implements GenericMessageResponse {
     public MessageResponse(String message, String timestamp) {
         this.message = message;
         this.timestamp = timestamp;
-    }
-
-    public void addDynamicFieldName(String key, Object value) {
-        data.put(key, value);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getData() {
-        return data;
     }
 
     public String getMessage() {
