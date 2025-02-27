@@ -16,10 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 
-import java.util.Map;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,6 +28,9 @@ class SpringBootWebfluxApirestApplicationTests {
 
 	@Autowired
 	private CategoryService categoryService;
+
+	@Autowired
+	private ProductService productService;
 
 	@Value("${config.base.endpoint}")
 	private String uri;
@@ -44,7 +45,7 @@ class SpringBootWebfluxApirestApplicationTests {
 				.expectStatus().isOk()
 				.expectHeader().contentType(MediaType.APPLICATION_JSON)
 				.expectBodyList(ProductDTO.class)
-				.hasSize(4);
+				.hasSize(3);
 	}
 
 	@Test
@@ -76,9 +77,9 @@ class SpringBootWebfluxApirestApplicationTests {
 	}
 
 	@Test
-	@Order(4)
+	@Order(3)
 	public void statusCodeNotFoundByIdTest() {
-		String id = "67bf9ad0d572bc1cde0586a";
+		String id = "67bf9ad0d572bc1cde058";
 
 		client.get()
 				.uri(uri + "/{id}", id)
@@ -94,7 +95,7 @@ class SpringBootWebfluxApirestApplicationTests {
 	}
 
 	@Test
-	@Order(5)
+	@Order(4)
 	public void existProductByIdTest() {
 		String id = "67bf9ad0d572bc1cde0586ab";
 
@@ -118,7 +119,7 @@ class SpringBootWebfluxApirestApplicationTests {
 	}
 
 	@Test
-	@Order(6)
+	@Order(5)
 	public void createTest() {
 		CategoryDTO categoryDTO = categoryService.findByName("Technology").block();
 		ProductDTO productDTO = new ProductDTO();
@@ -157,7 +158,7 @@ class SpringBootWebfluxApirestApplicationTests {
 	}
 
 	@Test
-	@Order(7)
+	@Order(6)
 	public void updateTest() {
 		String id = "67bf9ad0d572bc1cde0586ab";
 
@@ -199,14 +200,14 @@ class SpringBootWebfluxApirestApplicationTests {
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	public void deleteTest() {
-		String id = "67c0861910d135034f8ce00b";
-		String expectedMessage = "Product with id '" + id + "' not found";
+		ProductDTO productDto = productService.findByName("Iphone 14 XS 256GB").block();
+		String expectedMessage = "Product with id '" + productDto.getId() + "' not found";
 
 		client.delete()
-				.uri(uri + "/delete/{id}", id)
-				.header("id", id)
+				.uri(uri + "/delete/{id}", productDto.getId())
+				.header("id", productDto.getId())
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
 				.expectStatus().isOk()
@@ -223,8 +224,8 @@ class SpringBootWebfluxApirestApplicationTests {
 				});
 
 		client.get()
-				.uri(uri + "/{id}", id)
-				.header("id", id)
+				.uri(uri + "/{id}", productDto.getId())
+				.header("id", productDto.getId())
 				.exchange()
 				.expectStatus().isNotFound()
 				.expectBody(MessageResponse.class)
