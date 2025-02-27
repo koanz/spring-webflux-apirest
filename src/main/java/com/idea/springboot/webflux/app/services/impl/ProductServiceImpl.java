@@ -1,6 +1,6 @@
 package com.idea.springboot.webflux.app.services.impl;
 
-import com.idea.springboot.webflux.app.exceptions.CategoryNotFountException;
+import com.idea.springboot.webflux.app.exceptions.CategoryNotFountByIdException;
 import com.idea.springboot.webflux.app.exceptions.CustomNotFoundException;
 import com.idea.springboot.webflux.app.exceptions.ProductNotFoundException;
 import com.idea.springboot.webflux.app.mappers.ProductMapper;
@@ -60,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
                     return repository.save(product);
                 })
                 .map(mapper::toDto)
-                .switchIfEmpty(Mono.error(new CategoryNotFountException(request.getCategory().getId())));
+                .switchIfEmpty(Mono.error(new CategoryNotFountByIdException(request.getCategory().getId())));
     }
 
     @Transactional
